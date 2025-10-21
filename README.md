@@ -37,9 +37,10 @@ brew install kubectl
 
 ### Clone the repository
 
+```bash
 git clone https://github.com/gerardpontino/k3s-clustersetup-automation-macbook.git
 cd <your-repo-name>
-
+```
 ### Update configuration (optional)
 
 If you want to modify node specs, names, or counts, update the variables in your playbooks or inventory file.
@@ -108,7 +109,7 @@ k3s-worker-2   Ready    <none>                 18m   v1.33.5+k3s1
 k3s-worker-3   Ready    <none>                 17m   v1.33.5+k3s1
 ```
 
-Easily recreate a clean, ready-to-use K3s lab anytime — perfect for testing, learning, and automation practice. Enjoy!
+## Easily recreate a clean, ready-to-use K3s lab anytime — perfect for testing, learning, and automation practice. Enjoy!
 
 
 
