@@ -73,11 +73,11 @@ kubectl get nodes
 ```
 
 ```bash
-NAME            STATUS   ROLES                  AGE     VERSION
-k3s-master      Ready    control-plane,master   2m      v1.29.0+k3s1
-k3s-worker-01   Ready    <none>                 1m      v1.29.0+k3s1
-k3s-worker-02   Ready    <none>                 1m      v1.29.0+k3s1
-k3s-worker-03   Ready    <none>                 1m      v1.29.0+k3s1
+NAME           STATUS   ROLES                  AGE   VERSION
+k3s-master     Ready    control-plane,master   18m   v1.33.5+k3s1
+k3s-worker-1   Ready    <none>                 18m   v1.33.5+k3s1
+k3s-worker-2   Ready    <none>                 18m   v1.33.5+k3s1
+k3s-worker-3   Ready    <none>                 17m   v1.33.5+k3s1
 ```
 
 
