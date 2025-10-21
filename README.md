@@ -64,6 +64,34 @@ This playbook performs the following steps automatically:
 
 You can rerun this playbook anytime to delete and rebuild your cluster — perfect for a fresh lab environment or repeated practice runs.
 
+### Validate the Setup
+
+After the playbook completes, using the terminal, you can validate that all your VMs are running in Multipass:
+
+```bash
+multipass list
+```
+
+Example output:
+```bash
+─❯ multipass list
+Name                    State             IPv4             Image
+k3s-master              Running           192.168.64.94    Ubuntu 24.04 LTS
+                                          10.42.0.0
+                                          10.42.0.1
+k3s-worker-1            Running           192.168.64.95    Ubuntu 24.04 LTS
+                                          10.42.1.0
+k3s-worker-2            Running           192.168.64.96    Ubuntu 24.04 LTS
+                                          10.42.2.0
+k3s-worker-3            Running           192.168.64.97    Ubuntu 24.04 LTS
+                                          10.42.3.0
+```
+
+You should see all instances in a Running state.
+Below is an example screenshot of the Multipass instances list (you can attach your actual image here):
+
+
+
 ### Accessing the Cluster
 
 After the setup finishes, you can check your cluster status using:
