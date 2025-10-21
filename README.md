@@ -88,9 +88,9 @@ k3s-worker-3            Running           192.168.64.97    Ubuntu 24.04 LTS
 ```
 
 You should see all instances in a Running state.
-Below is an example screenshot of the Multipass instances list (you can attach your actual image here):
+Below is an example screenshot of the Multipass instances list:
 
-
+<img width="1396" height="559" alt="Screenshot 2025-10-21 at 10 23 31 PM" src="https://github.com/user-attachments/assets/96aeab2b-6e45-499e-8ded-6149550bc775" />
 
 ### Accessing the Cluster
 
@@ -108,6 +108,7 @@ k3s-worker-2   Ready    <none>                 18m   v1.33.5+k3s1
 k3s-worker-3   Ready    <none>                 17m   v1.33.5+k3s1
 ```
 
+Easily recreate a clean, ready-to-use K3s lab anytime — perfect for testing, learning, and automation practice. Enjoy!
 
 
 
