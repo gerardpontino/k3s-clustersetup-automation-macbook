@@ -1,0 +1,133 @@
+---
+- hosts: localhost
+  tasks:
+    - name: Check and delete existing master and worker nodes if they exist
+      shell: |
+        if multipass list | grep -q 'k3s-master'; then multipass delete k3s-master; multipass purge; fi
+        if multipass list | grep -q 'k3s-worker-1'; then multipass delete k3s-worker-1; multipass purge; fi
+        if multipass list | grep -q 'k3s-worker-01'; then multipass delete k3s-worker-01; multipass purge; fi
+        if multipass list | grep -q 'k3s-worker-2'; then multipass delete k3s-worker-2; multipass purge; fi
+        if multipass list | grep -q 'k3s-worker-02'; then multipass delete k3s-worker-02; multipass purge; fi
+        if multipass list | grep -q 'k3s-worker-3'; then multipass delete k3s-worker-3; multipass purge; fi
+        if multipass list | grep -q 'k3s-worker-03'; then multipass delete k3s-worker-03; multipass purge; fi
+      ignore_errors: true
+
+    - name: Provision master node (k3s-master)
+      shell: |
+        multipass launch --name k3s-master --cpus 2 --memory 4G --disk 20G
+      register: master_provision
+
+    - name: Provision worker nodes (k3s-worker-01, k3s-worker-02, k3s-worker-03)
+      loop:
+        - 01
+        - 02
+        - 03
+      shell: |
+        multipass launch --name k3s-worker-{{ item }} --cpus 1 --memory 1G --disk 4G
+      register: worker_provision
+
+    - name: Wait for instances to be ready
+      shell: |
+        multipass list
+      register: instances
+      until: instances.stdout.find('Running') != -1
+      retries: 10
+      delay: 5
+
+    - name: Get the master node IP address (k3s-master)
+      shell: multipass info k3s-master | grep IPv4 | awk '{print $2}'
+      register: master_ip
+      changed_when: false
+
+    - name: Display master node IP
+      debug:
+        msg: "Master node IP: {{ master_ip.stdout }}"
+
+    - name: Get worker node IP addresses
+      loop:
+        - 01
+        - 02
+        - 03
+      shell: multipass info k3s-worker-{{ item }} | grep IPv4 | awk '{print $2}'
+      register: worker_ips
+      changed_when: false
+
+    - name: Display worker nodes IPs
+      debug:
+        msg: "Worker node IPs: {{ worker_ips.results | map(attribute='stdout') | list }}"
+
+    - name: Install k3s on the master node (k3s-master)
+      shell: |
+        multipass exec k3s-master -- bash -c "curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC='--write-kubeconfig-mode 644 --disable traefik --disable-network-policy --disable servicelb' sh -"
+      register: master_k3s
+
+    - name: Get K3s master token
+      shell: |
+        multipass exec k3s-master -- sudo cat /var/lib/rancher/k3s/server/node-token
+      register: k3s_token
+      changed_when: false
+
+    - name: Install k3s agent on worker nodes (k3s-worker-01, k3s-worker-02, k3s-worker-03)
+      loop:
+        - 01
+        - 02
+        - 03
+      shell: |
+        multipass exec k3s-worker-{{ item }} -- bash -c "curl -sfL https://get.k3s.io | K3S_URL=https://{{ master_ip.stdout }}:6443 K3S_TOKEN={{ k3s_token.stdout }} sh -"
+      register: worker_k3s
+
+    - name: Verify nodes are added to the K3s cluster
+      shell: |
+        multipass exec k3s-master -- kubectl get nodes
+      register: nodes_status
+
+    - name: Display K3s cluster nodes
+      debug:
+        msg: "K3s cluster nodes: {{ nodes_status.stdout }}"
+    - name: Retrieve Kubeconfig from k3s-master
+      command: multipass exec k3s-master -- sudo cat /etc/rancher/k3s/k3s.yaml
+      register: kubeconfig_output
+
+    - name: Get Master Node IP
+      shell: multipass info k3s-master | grep IPv4 | awk '{print $2}'
+      register: master_ip_output
+
+    - name: Debug Master Node IP Output
+      debug:
+        var: master_ip_output.stdout
+
+    - name: Set Master IP variable
+      set_fact:
+        master_ip: "{{ master_ip_output.stdout.strip() }}"
+
+    - name: Debug Master IP Variable
+      debug:
+        msg: "Master Node IP: {{ master_ip }}"
+
+    - name: Ensure .kube directory exists
+      file:
+        path: ~/.kube
+        state: directory
+        mode: '0700'
+
+    - name: Write Kubeconfig to file
+      copy:
+        content: "{{ kubeconfig_output.stdout }}"
+        dest: ~/.kube/config
+        mode: '0600'
+
+    - name: Update Kubeconfig server entry with Master Node IP
+      lineinfile:
+        path: ~/.kube/config
+        regexp: '^(\s*server:\s*)https://.*'
+        line: "    server: https://{{ master_ip }}:6443"
+        backup: yes
+      when: master_ip is defined and master_ip != ""
+
+    - name: Debug Kubeconfig
+      command: cat ~/.kube/config
+      register: kubeconfig_final
+
+    - name: Display final Kubeconfig content
+      debug:
+        var: kubeconfig_final.stdout
