@@ -39,7 +39,7 @@ brew install kubectl
 
 ```bash
 git clone https://github.com/gerardpontino/k3s-clustersetup-automation-macbook.git
-cd <your-repo-name>
+cd k3s-clustersetup-automation-macbook/
 ```
 ### Update configuration (optional)
 
