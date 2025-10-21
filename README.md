@@ -67,7 +67,7 @@ You can rerun this playbook anytime to delete and rebuild your cluster — perfe
 
 ### Validate the Setup
 
-After the playbook completes, using the terminal, you can validate that all your VMs are running in Multipass:
+After the playbook completes, you can validate that all your VMs are running in Multipass:
 
 ```bash
 multipass list
