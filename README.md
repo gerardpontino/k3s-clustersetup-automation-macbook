@@ -48,7 +48,7 @@ If you want to modify node specs, names, or counts, update the variables in your
 ### Run the Ansible playbook
 
 ```bash
-ansible-playbook -i inventory.yml k3s_provision.yaml
+ansible-playbook -i inventory.yml automate_k3s_provisioning.yaml
 ```
 
 This playbook performs the following steps automatically:
