@@ -5,7 +5,7 @@ It provisions one master node and three worker nodes, installs K3s, and configur
 
 This setup is perfect if you want to:
 
-Practice Kubernetes use cases or certification labs (CKA, CKAD, CKS)
+Practice Kubernetes use cases or few certification labs (CKA, CKAD, CKS)
 
 Quickly spin up a fresh K3s environment for testing
 
